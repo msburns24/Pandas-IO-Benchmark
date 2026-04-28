@@ -54,11 +54,11 @@ downstream analysis and visualization.
 
 | **Format** | **Engines to Test**                                             |
 |:-----------|:----------------------------------------------------------------|
-| CSV        | `C` (write), `C` / `python` (read)                              |
+| CSV        | `C` (write), `C` / `python` / `pyarrow` (read)                  |
 | Parquet    | `pyarrow`, `fastparquet`                                        |
 | Feather    | `pyarrow`                                                       |
 | HDF5       | `pytables` (`format="fixed"` vs `format="table"`)               |
-| Excel      | `openpyxl`, `xlsxwriter` (write); `openpyxl` (read)             |
+| Excel      | `openpyxl`, `xlsxwriter` (write); `openpyxl`, `calamine` (read) |
 | JSON       | `ujson` if available, default otherwise                         |
 | Pickle     | protocol 2, 4, 5                                                |
 | ORC        | `pyarrow`                                                       |
