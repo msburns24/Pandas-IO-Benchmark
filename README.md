@@ -6,7 +6,7 @@ Compare Pandas serialization formats across reading, writing, file size, and mor
 
 ### Phase 1 — Setup
 
-- [ ] Create virtual environment, pin all dependencies
+- [x] Create virtual environment, pin all dependencies
 - [ ] Write `generate_dataset(n_rows, variant, seed)` function
 - [ ] Write `benchmark_write(df, format, engine, compression)` function
 - [ ] Write `benchmark_read(path, format, engine)` function
