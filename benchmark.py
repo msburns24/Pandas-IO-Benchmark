@@ -29,16 +29,28 @@ console = Console()
 
 
 # Start write test
-def benchmark_write(
-    df: DataFrame,
-    fmt: str,
-    path: Path,
-    engine: Optional[str] = None,
-    compression: Optional[str] = None,
-) -> float:
+def benchmark_write(df: DataFrame, fmt: str, path: Path, **kwargs) -> float:
     start_time = time.perf_counter()
+
     if fmt == 'csv':
-        df.to_csv(path, index=False, compression=compression) # pyright: ignore
+        df.to_csv(path, index=False, **kwargs)
+    elif fmt == 'parquet':
+        df.to_parquet(path, index=False, **kwargs)
+    elif fmt == 'feather':
+        df.to_feather(path, **kwargs)
+    elif fmt == 'hdf':
+        df.to_hdf(path, **kwargs)
+    elif fmt == 'json':
+        df.to_json(path, index=False, **kwargs)
+    elif fmt == 'pickle':
+        df.to_pickle(path, **kwargs)
+    elif fmt == 'excel':
+        df.to_excel(path, index=False, **kwargs)
+    elif fmt == 'orc':
+        df.to_orc(path, index=False, **kwargs)
+    else:
+        raise ValueError(f"Unknown format: '{fmt}'")
+    
     duration = time.perf_counter() - start_time
     return duration
 
