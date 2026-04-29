@@ -28,7 +28,6 @@ RESULTS_PATH = ROOT_DIR / 'results.parquet'
 console = Console()
 
 
-# Start write test
 def benchmark_write(df: DataFrame, fmt: str, path: Path, **kwargs) -> float:
     start_time = time.perf_counter()
 
@@ -55,6 +54,32 @@ def benchmark_write(df: DataFrame, fmt: str, path: Path, **kwargs) -> float:
     return duration
 
 
+def benchmark_read(fmt: str, path: Path, **kwargs) -> tuple[DataFrame, float]:
+    start_time = time.perf_counter()
+
+    if fmt == 'csv':
+        df = pd.read_csv(path, **kwargs)
+    elif fmt == 'parquet':
+        df = pd.read_parquet(path, **kwargs)
+    elif fmt == 'feather':
+        df = pd.read_feather(path, **kwargs)
+    elif fmt == 'hdf':
+        df = pd.read_hdf(path, **kwargs)
+    elif fmt == 'json':
+        df = pd.read_json(path, **kwargs)
+    elif fmt == 'pickle':
+        df = pd.read_pickle(path, **kwargs)
+    elif fmt == 'excel':
+        df = pd.read_excel(path, **kwargs)
+    elif fmt == 'orc':
+        df = pd.read_orc(path, **kwargs)
+    else:
+        raise ValueError(f"Unknown format: '{fmt}'")
+    
+    duration = time.perf_counter() - start_time
+    return df, duration
+
+
 
 console.print(f"Starting test for format '{FORMAT}'")
 
@@ -75,11 +100,10 @@ write_time_s = benchmark_write(df, FORMAT, CSV_PATH, compression=COMPRESSION)
 
 # Read test
 console.print(f'Starting read test')
-t_read_start = time.perf_counter()
-df_read = pd.read_csv(
-    CSV_PATH, compression=COMPRESSION, dtype=dtypes, parse_dates=timestamp_cols,
+df_read, read_time_s = benchmark_read(
+    FORMAT, CSV_PATH, compression=COMPRESSION, dtype=dtypes,
+    parse_dates=timestamp_cols,
 )
-read_time_s = time.perf_counter() - t_read_start
 
 # Fidelity Check
 try:

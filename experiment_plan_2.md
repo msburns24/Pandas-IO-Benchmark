@@ -189,7 +189,7 @@ Cards (pull one at a time, WIP=1):
 - [x] Create venv, `requirements.txt` with pinned deps, `.python-version`
 - [x] Write `generate_dataset(n_rows, variant="mixed", seed=42)` — returns a
       DataFrame with all 8 dtype columns
-- [ ] Write `benchmark_write(df, fmt, engine, compression)` — single trial,
+- [x] Write `benchmark_write(df, fmt, engine, compression)` — single trial,
       returns `(write_time_s, path)`
 - [ ] Write `benchmark_read(path, fmt, engine)` — single trial, returns
       `read_time_s`
