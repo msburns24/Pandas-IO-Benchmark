@@ -82,12 +82,16 @@ def benchmark_read(fmt: str, path: Path, **kwargs) -> tuple[DataFrame, float]:
 
 def check_fidelity(original: DataFrame, reloaded: DataFrame) -> bool:
     try:
-        pd.testing.assert_frame_equal(df, df_read)
+        pd.testing.assert_frame_equal(original, reloaded)
         return True
     except AssertionError:
         return False
     except Exception:
         raise
+
+
+def main() -> None:
+    return
 
 
 console.print(f"Starting test for format '{FORMAT}'")

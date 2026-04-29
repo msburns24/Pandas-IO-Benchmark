@@ -56,14 +56,14 @@ downstream analysis and visualization.
 
 | **Format** | **Engines to Test**                                 |
 | :--------- | :-------------------------------------------------- |
-| CSV        | `c` (write), `c` / `python` (read)                  |
-| Parquet    | `pyarrow`, `fastparquet`                            |
+| CSV (read) | `c`, `python`, `pyarrow`                            |
+| Excel      | `openpyxl`, `calamine` (read), `xlsxwriter` (write) |
 | Feather    | `pyarrow`                                           |
-| HDF5       | `pytables` (`format="fixed"` vs `format="table"`)   |
-| Excel      | `openpyxl`, `xlsxwriter` (write); `openpyxl` (read) |
-| JSON       | `ujson` if available, default otherwise             |
-| Pickle     | protocol 2, 4, 5                                    |
+| HDF5       | `pytables`                                          |
+| JSON       | `ujson`, `pyarrow`                                  |
 | ORC        | `pyarrow`                                           |
+| Parquet    | `pyarrow`, `fastparquet`                            |
+| Pickle     | protocol 2, 4, 5                                    |
 
 ---
 
@@ -71,14 +71,33 @@ downstream analysis and visualization.
 
 | **Format** | **Codecs to Test**                                  |
 | :--------- | :-------------------------------------------------- |
+| CSV        | `None`, `gzip`, `bz2`, `xz`                         |
 | Parquet    | `none`, `snappy`, `gzip`, `brotli`, `lz4`, `zstd`   |
 | Feather    | `none`, `lz4`, `zstd`                               |
 | HDF5       | `complevel` 0, 3, 6, 9 × `complib` `zlib` / `blosc` |
-| CSV        | `none`, `gzip`, `bz2`, `xz`                         |
 | JSON       | `none`, `gzip`                                      |
 | Pickle     | no compression (inherent in protocol)               |
 | Excel      | no compression (format-internal)                    |
 | ORC        | `none`, `snappy`, `zlib`, `zstd`                    |
+
+---
+
+## Other Parameters
+
+| **Format** | **Parameter** | **Values**                                    |
+| :--------- | :------------ | :-------------------------------------------- |
+| CSV        | `low_memory`  | `True`, `False`                               |
+| HDF5       | `format`      | fixed, table                                  |
+| JSON       | `orient`      | split, records, index, columns, values, table |
+| 
+
+Formats to pass `index = False`:
+
+- CSV
+- Excel
+- JSON
+- ORC
+- Parquet
 
 ---
 
@@ -191,9 +210,9 @@ Cards (pull one at a time, WIP=1):
       DataFrame with all 8 dtype columns
 - [x] Write `benchmark_write(df, fmt, engine, compression)` — single trial,
       returns `(write_time_s, path)`
-- [ ] Write `benchmark_read(path, fmt, engine)` — single trial, returns
+- [x] Write `benchmark_read(path, fmt, engine)` — single trial, returns
       `read_time_s`
-- [ ] Write `fidelity_check(original, reloaded)` —
+- [x] Write `fidelity_check(original, reloaded)` —
       returns `(pass: bool, notes: str)`
 - [ ] Wire outer loop: sweep all formats at 10K/mixed, 3 trials, append to
       results list, save `results.parquet`

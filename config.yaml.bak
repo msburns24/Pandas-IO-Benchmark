@@ -1,0 +1,22 @@
+global:
+  no_index_formats: [csv, excel, json, orc, parquet]
+
+
+formats:
+
+  json:
+    orient: [split, records, index, columns, values, table]
+    compression: [null, gzip, bz2, xz]
+    engine: [ujson, pyarrow]
+
+  orc:
+    engine: []
+    compression: []
+
+  parquet:
+    engine: []
+    compression: []
+
+  pickle:
+    engine: []
+    compression: []
