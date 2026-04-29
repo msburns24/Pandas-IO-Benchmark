@@ -152,7 +152,7 @@ Known issues to document explicitly:
 
 > **Approach:** Agile for Solo Python Projects (Kanban + thin vertical slices).
 > WIP limit = 1. Each card is a ≤30-minute slice phrased as a verb-noun pair.
-> No card enters Doing without a clear Definition of Done. Cycles are 1–2 weeks
+> No card enters Doing without a clear Definition of Done. Cycles are 1-2 weeks
 > depending on available hours. Retro at each cycle boundary.
 
 ### Definition of Done (applies to every card)
@@ -308,7 +308,7 @@ engine          str       e.g. "pyarrow"
 compression     str       e.g. "snappy"
 variant         str       e.g. "mixed"
 n_rows          int       e.g. 1_000_000
-trial           int       1–7
+trial           int       1-7
 write_time_s    float
 read_time_s     float
 file_size_bytes int
