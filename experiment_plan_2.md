@@ -187,7 +187,7 @@ memory profiling, analysis notebook.
 Cards (pull one at a time, WIP=1):
 
 - [x] Create venv, `requirements.txt` with pinned deps, `.python-version`
-- [ ] Write `generate_dataset(n_rows, variant="mixed", seed=42)` — returns a
+- [x] Write `generate_dataset(n_rows, variant="mixed", seed=42)` — returns a
       DataFrame with all 8 dtype columns
 - [ ] Write `benchmark_write(df, fmt, engine, compression)` — single trial,
       returns `(write_time_s, path)`
@@ -308,7 +308,7 @@ engine          str       e.g. "pyarrow"
 compression     str       e.g. "snappy"
 variant         str       e.g. "mixed"
 n_rows          int       e.g. 1_000_000
-trial           int       1-7
+trial           int       1-**7**
 write_time_s    float
 read_time_s     float
 file_size_bytes int
