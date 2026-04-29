@@ -80,6 +80,15 @@ def benchmark_read(fmt: str, path: Path, **kwargs) -> tuple[DataFrame, float]:
     return df, duration
 
 
+def check_fidelity(original: DataFrame, reloaded: DataFrame) -> bool:
+    try:
+        pd.testing.assert_frame_equal(df, df_read)
+        return True
+    except AssertionError:
+        return False
+    except Exception:
+        raise
+
 
 console.print(f"Starting test for format '{FORMAT}'")
 
@@ -106,11 +115,7 @@ df_read, read_time_s = benchmark_read(
 )
 
 # Fidelity Check
-try:
-    pd.testing.assert_frame_equal(df, df_read)
-    fidelity_pass = True
-except AssertionError:
-    fidelity_pass = False
+fidelity_pass = check_fidelity(df, df_read)
 
 
 # Save results
