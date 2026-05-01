@@ -28,6 +28,37 @@ RESULTS_PATH = ROOT_DIR / 'results.parquet'
 console = Console()
 
 
+def main() -> None:
+    results_list = []
+    df = DataFrameGenerator(seed=0).generate_mixed(N_ROWS)
+
+    for _ in range(3):
+        write_time_s = benchmark_write(df, CSV_PATH, FORMAT, compression=COMPRESSION)
+        df_read, read_time_s = benchmark_read(
+            CSV_PATH, FORMAT, compression=COMPRESSION, dtype=df.dtypes,
+        )
+        fidelity_pass = check_fidelity(df, df_read)
+        results_list.append({
+            'format':           FORMAT,
+            'engine':           ENGINE,
+            'compression':      ENGINE,
+            'variant':          VARIANT,
+            'n_rows':           N_ROWS,
+            'trial':            1,
+            'write_time_s':     write_time_s,
+            'read_time_s':      read_time_s,
+            'file_size_bytes':  CSV_PATH.stat().st_size,
+            'peak_memory_mb':   0,
+            'fidelity_pass':    fidelity_pass,
+        })
+
+    results = pd.DataFrame(results_list)
+    console.print('Tests complete. Results:')
+    console.print(results.to_markdown(index=False, tablefmt='simple'))
+    results.to_parquet(RESULTS_PATH)
+    return
+
+
 def benchmark_write(df: DataFrame, path: Path, fmt: str, **kwargs) -> float:
     start_time = time.perf_counter()
 
@@ -97,32 +128,6 @@ def check_fidelity(original: DataFrame, reloaded: DataFrame) -> bool:
         return False
     except Exception:
         raise
-
-
-def main() -> None:
-    df = DataFrameGenerator(seed=0).generate_mixed(N_ROWS)
-    write_time_s = benchmark_write(df, CSV_PATH, FORMAT, compression=COMPRESSION)
-    df_read, read_time_s = benchmark_read(
-        CSV_PATH, FORMAT, compression=COMPRESSION, dtype=df.dtypes,
-    )
-    fidelity_pass = check_fidelity(df, df_read)
-
-    results = pd.DataFrame([{
-        'format':           FORMAT,
-        'engine':           ENGINE,
-        'compression':      ENGINE,
-        'variant':          VARIANT,
-        'n_rows':           N_ROWS,
-        'trial':            1,
-        'write_time_s':     write_time_s,
-        'read_time_s':      read_time_s,
-        'file_size_bytes':  CSV_PATH.stat().st_size,
-        'peak_memory_mb':   0,
-        'fidelity_pass':    fidelity_pass,
-    }])
-    console.print('Tests complete. Results:')
-    console.print(results.iloc[0])
-    results.to_parquet(RESULTS_PATH)
 
 
 if __name__ == '__main__':
