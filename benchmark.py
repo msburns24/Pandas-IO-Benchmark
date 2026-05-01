@@ -28,7 +28,7 @@ RESULTS_PATH = ROOT_DIR / 'results.parquet'
 console = Console()
 
 
-def benchmark_write(df: DataFrame, fmt: str, path: Path, **kwargs) -> float:
+def benchmark_write(df: DataFrame, path: Path, fmt: str, **kwargs) -> float:
     start_time = time.perf_counter()
 
     if fmt == 'csv':
@@ -54,8 +54,17 @@ def benchmark_write(df: DataFrame, fmt: str, path: Path, **kwargs) -> float:
     return duration
 
 
-def benchmark_read(fmt: str, path: Path, **kwargs) -> tuple[DataFrame, float]:
+def benchmark_read(path: Path, fmt: str, **kwargs) -> tuple[DataFrame, float]:
     start_time = time.perf_counter()
+
+    if 'dtype' in kwargs:
+        dtypes = dict(kwargs['dtype'])
+        timestamp_columns = [c for c in dtypes if 'timestamp' in c]
+        for column in timestamp_columns:
+            del dtypes[column]
+        
+        kwargs['dtype'] = dtypes
+        kwargs['parse_dates'] = timestamp_columns
 
     if fmt == 'csv':
         df = pd.read_csv(path, **kwargs)
@@ -91,51 +100,30 @@ def check_fidelity(original: DataFrame, reloaded: DataFrame) -> bool:
 
 
 def main() -> None:
-    return
+    df = DataFrameGenerator(seed=0).generate_mixed(N_ROWS)
+    write_time_s = benchmark_write(df, CSV_PATH, FORMAT, compression=COMPRESSION)
+    df_read, read_time_s = benchmark_read(
+        CSV_PATH, FORMAT, compression=COMPRESSION, dtype=df.dtypes,
+    )
+    fidelity_pass = check_fidelity(df, df_read)
+
+    results = pd.DataFrame([{
+        'format':           FORMAT,
+        'engine':           ENGINE,
+        'compression':      ENGINE,
+        'variant':          VARIANT,
+        'n_rows':           N_ROWS,
+        'trial':            1,
+        'write_time_s':     write_time_s,
+        'read_time_s':      read_time_s,
+        'file_size_bytes':  CSV_PATH.stat().st_size,
+        'peak_memory_mb':   0,
+        'fidelity_pass':    fidelity_pass,
+    }])
+    console.print('Tests complete. Results:')
+    console.print(results.iloc[0])
+    results.to_parquet(RESULTS_PATH)
 
 
-console.print(f"Starting test for format '{FORMAT}'")
-
-
-# Create dataset (initial, before testing)
-console.print(f"Generating dataset '{VARIANT}'")
-df = DataFrameGenerator(seed=0).generate_mixed(N_ROWS)
-
-dtypes = df.dtypes.to_dict()
-timestamp_cols = [c for c in df.columns if 'timestamp' in c]
-for col in timestamp_cols:
-    del dtypes[col]  # datetime64[us] not supported for parsing
-
-
-# Write Test
-console.print(f'Starting write test')
-write_time_s = benchmark_write(df, FORMAT, CSV_PATH, compression=COMPRESSION)
-
-# Read test
-console.print(f'Starting read test')
-df_read, read_time_s = benchmark_read(
-    FORMAT, CSV_PATH, compression=COMPRESSION, dtype=dtypes,
-    parse_dates=timestamp_cols,
-)
-
-# Fidelity Check
-fidelity_pass = check_fidelity(df, df_read)
-
-
-# Save results
-results = pd.DataFrame([{
-    'format':           FORMAT,
-    'engine':           ENGINE,
-    'compression':      ENGINE,
-    'variant':          VARIANT,
-    'n_rows':           N_ROWS,
-    'trial':            1,
-    'write_time_s':     write_time_s,
-    'read_time_s':      read_time_s,
-    'file_size_bytes':  CSV_PATH.stat().st_size,
-    'peak_memory_mb':   0,
-    'fidelity_pass':    fidelity_pass,
-}])
-console.print('Tests complete. Results:')
-console.print(results.iloc[0])
-results.to_parquet(RESULTS_PATH)
+if __name__ == '__main__':
+    main()
