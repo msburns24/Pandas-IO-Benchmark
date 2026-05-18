@@ -50,13 +50,13 @@ class DataFrameGenerator:
         return self.generate(n_rows)
     
     def generate_numeric_heavy(self, n_rows: int) -> DataFrame:
-        raise NotImplementedError("Only variant 'mixed' currently implemented.")
+        return self.generate(n_rows, n_float_cols=8, n_cat_cols=1, n_string_cols=1, n_datetime_cols=1)
 
     def generate_string_heavy(self, n_rows: int) -> DataFrame:
-        raise NotImplementedError("Only variant 'mixed' currently implemented.")
+        return self.generate(n_rows, n_float_cols=1, n_cat_cols=1, n_string_cols=8, n_datetime_cols=1)
 
     def generate_datetime_heavy(self, n_rows: int) -> DataFrame:
-        raise NotImplementedError("Only variant 'mixed' currently implemented.")
+        return self.generate(n_rows, n_float_cols=1, n_cat_cols=1, n_string_cols=1, n_datetime_cols=8)
 
 
 class SeriesGenerator:

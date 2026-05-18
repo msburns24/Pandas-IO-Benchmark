@@ -1,6 +1,7 @@
 # Pandas-IO-Benchmark
 
-Compare Pandas serialization formats across reading, writing, file size, and more.
+Compare Pandas serialization formats across reading, writing, file size, and
+more.
 
 ## Implementation
 
@@ -13,7 +14,7 @@ Compare Pandas serialization formats across reading, writing, file size, and mor
 - [ ] Write `fidelity_check(original, reloaded)` function
 - [ ] Write outer loop that sweeps all combinations and appends to results list
 - [ ] Save results to `results.parquet` after each completed format block
-  (checkpoint)
+      (checkpoint)
 
 ### Phase 2 — Dry Run
 
